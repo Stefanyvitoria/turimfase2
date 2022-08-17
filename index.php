@@ -1,3 +1,21 @@
+<?php
+    require_once "./Database.php";
+
+    $host = "localhost";
+    $user = "root";
+    $password = "123456";
+    $database = "teste_rte";
+    $banco = new BD();
+    
+    try {
+        $banco->conectar($host, $user, $password, $database);
+    } catch (Exception $e) {
+        $banco->criarBD($host, $user, $password, $database);
+        $banco->conectar($host, $user, $password, $database);
+    }
+    
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
