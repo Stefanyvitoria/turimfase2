@@ -26,18 +26,33 @@
 
         public function ler() {
 
-            $result = $this->conexao->query("select * from pessoa");
-            $pessoas = "";
+            $result = $this->conexao->query("select P.id id_p, P.nome nome_p, F.id id_f, F.nome nome_f from pessoa P left join filho F on F.pessoa_id = P.id;");
+            $pessoas = array("pessoas"=>[]);
 
             if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
                     
-                }
-                $pessoas = '{"pessoas"=>[]}';
+                    $achou = false;
+                    for ($i = 0; $i < count($pessoas['pessoas']); $i++) {
+                        $pessoas['pessoas'][$i] = $pessoas['pessoas'][$i];                        
 
-            } else {
-                $pessoas = array("pessoas"=>[]);
+                        if ( ($pessoas['pessoas'][$i]['nome'] == $row['nome_p']) and ($row['nome_f'] != null ? true : false) ) {
+                            
+                            $pessoas['pessoas'][$i]['filhos'][] = $row['nome_f'];
+                            
+                            $achou = true;
+                            break;
+                        } 
+                    }
+
+                    if (!$achou) {
+                        $infoPessoa = ["nome"=>$row["nome_p"], "filhos"=>$row['nome_f'] != null ? [$row['nome_f']] :[]]; //json com informações da pessoa
+                        $pessoas["pessoas"][] =  $infoPessoa; ///adição da pessoa no json de retorno
+
+                    }
+                }   
             }
+
 
             header('Content-Type: application/json');
             echo json_encode($pessoas);
