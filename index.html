@@ -7,6 +7,9 @@
     <title>Teste</title>
 </head>
 
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="./script.js"></script>
+
 <style>
     .campos{
         margin-top: 1rem; 
@@ -65,7 +68,7 @@
 
         <table class="table">
 
-            <tr>
+            <tr onclick="Notificacao()">
                 <td class="titulo" >
                     <b>Pessoas</b>
                 </td>
@@ -87,7 +90,7 @@
 
         </table>
 
-        <textarea name="json" id="json" style="display: inline-block;" cols="65" rows="20"></textarea>
+        <textarea id="json-area" name="json" style="display: inline-block;" cols="65" rows="20"></textarea>
     </div>
 
 </body>
