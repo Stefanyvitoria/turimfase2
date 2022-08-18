@@ -1,21 +1,3 @@
-<?php
-    require_once "./Database.php";
-
-    $host = "localhost";
-    $user = "root";
-    $password = "123456";
-    $database = "teste_rte";
-    $banco = new BD();
-    
-    try {
-        $banco->conectar($host, $user, $password, $database);
-    } catch (Exception $e) {
-        $banco->criarBD($host, $user, $password, $database);
-        $banco->conectar($host, $user, $password, $database);
-    }
-    
-?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -89,7 +71,8 @@
                 </td>
             </tr>
 
-            <tr>
+            
+            <!-- <tr>
                 <td class="row-pessoa" style="width: 70%;">Nome</td>
                 <td class="row-pessoa" style="text-align:center;width: 30%;">
                     <input style="padding: 3px;" type="button" value="Remover">
@@ -100,12 +83,13 @@
                 <td style="padding: 3px;">
                     <input style="padding: 3px;" type="button" value="Adicionar filho">
                 </td>
-            </tr>
+            </tr> -->
 
         </table>
 
-        <textarea name="json" id="json" style="display: inline-block;">json</textarea>
+        <textarea name="json" id="json" style="display: inline-block;" cols="65" rows="20"></textarea>
     </div>
-    
+
 </body>
 </html>
+
