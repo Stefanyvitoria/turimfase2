@@ -1,14 +1,27 @@
 <?php
     class BD {
-        private $conexao = NULL;
+        protected $conexao = NULL;
+        private $host;
+        private $user;
+        private $password;
+        private $database;
 
-        
-        public function conectar($host, $user, $password, $database) {
-            $this->conexao =new mysqli($host, $user, $password, $database);
+        public function __construct($host, $user, $password, $database)
+        {
+            $this->host = $host;
+            $this->user = $user;
+            $this->password = $password;
+            $this->database = $database;
         }
 
-        public function criarBD($host, $user, $password) {
-            $this->conexao = new mysqli($host, $user, $password);
+
+        
+        public function conectar() {
+            $this->conexao =new mysqli($this->host, $this->user, $this->password, $this->database);
+        }
+
+        public function criarBD() {
+            $this->conexao = new mysqli($this->host, $this->user, $this->password);
 
             $sql = file_get_contents("./Banco.sql");
             $lista_sql = explode(";", $sql);
@@ -19,9 +32,6 @@
                     $this->conexao->commit();
                 }
             }
-        }
-
-        public function gravar($json) {
         }
 
         public function ler() {
@@ -57,6 +67,31 @@
             header('Content-Type: application/json');
             echo json_encode($pessoas);
         }
+        
+        public function gravar($json) {
+            
+            $this->conexao->query('DROP TABLE filho');
+            $this->conexao->query('DROP TABLE pessoa');
+            $this->criarBD();
+
+            $id_p = 1;
+            $id_filho = 1;
+            foreach ($json->pessoas as $pessoa) {
+
+                $this->conexao->query("insert  into  pessoa (id,nome) values (".strval($id_p).",'".$pessoa->nome."')");
+                
+                foreach ($pessoa->filhos as $filho) {
+
+                    $this->conexao->query("insert  into filho (id,pessoa_id,nome) values (".$id_filho.",".$id_p.",'".$filho."')");
+                    $id_filho += 1;
+                }
+            
+                $id_p +=1;
+            }
+
+            header('Content-Type: application/json');
+            echo json_encode($json);
+        }
     }
 
  
@@ -66,18 +101,14 @@
 
     header('Content-Type: application/json');
 
-    $host = "localhost";
-    $user = "root";
-    $password = "123456";
-    $database = "teste_rte";
-    $banco = new BD();
+    $banco = new BD("localhost", 'root', '123456', 'teste_rte');
 
     // Conectar / Criar banco
     try {
-        $banco->conectar($host, $user, $password, $database);
+        $banco->conectar();
     } catch (Exception $e) {
-        $banco->criarBD($host, $user, $password, $database);
-        $banco->conectar($host, $user, $password, $database);
+        $banco->criarBD();
+        $banco->conectar();
     }
 
 
@@ -85,6 +116,11 @@
     {
         case "ler" :
             $banco->ler();
+            break;
+
+        case "gravar" :
+            $json = json_decode(file_get_contents('php://input'));
+            $banco->gravar($json);
             break;
 
         default: 

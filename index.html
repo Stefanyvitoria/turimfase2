@@ -66,25 +66,20 @@
 
     <!-- Botões -->
     <div> 
-        <input type="button" value="Gravar">
-        <input type="button" value="Ler">
+        <input onclick="gravar()" type="button" value="Gravar">
+        <input onclick="ler()" type="button" value="Ler">
     </div>
 
     <!-- Entrada de pessoas -->
     <div style="margin-top: 1rem;">
         Nome:
-        <input type="text">
-        <input type="button" value="Incluir">
+        <input id="nome-pesssoa" type="text">
+        <input type="button" value="Incluir" onclick="incluirPessoa()">
     </div>
 
     <div class="campos">
 
         <table class="table" id="table">
-            <tr>
-                <td class="titulo" >
-                    <b>Pessoas</b>
-                </td>
-            </tr>
 
         </table>
 
