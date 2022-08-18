@@ -1,4 +1,9 @@
 <?php
+
+    // -----------------------------------
+    //  Autor: izidiostefany@gmail.com
+    //  Data: 18/08/2022
+    // -----------------------------------
     class BD {
         protected $conexao = NULL;
         private $host;
@@ -6,15 +11,12 @@
         private $password;
         private $database;
 
-        public function __construct($host, $user, $password, $database)
-        {
+        public function __construct($host, $user, $password, $database) {
             $this->host = $host;
             $this->user = $user;
             $this->password = $password;
             $this->database = $database;
         }
-
-
         
         public function conectar() {
             $this->conexao =new mysqli($this->host, $this->user, $this->password, $this->database);
@@ -23,7 +25,7 @@
         public function criarBD() {
             $this->conexao = new mysqli($this->host, $this->user, $this->password);
 
-            $sql = file_get_contents("./Banco.sql");
+            $sql = file_get_contents("./Banco.sql"); //Script com a criação do schema
             $lista_sql = explode(";", $sql);
             
             for ($i = 0; $i < count($lista_sql) - 1; $i++) {
@@ -42,6 +44,7 @@
             if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
                     
+                    //Monta um objeto para ser retornado
                     $achou = false;
                     for ($i = 0; $i < count($pessoas['pessoas']); $i++) {
                         $pessoas['pessoas'][$i] = $pessoas['pessoas'][$i];                        
@@ -58,11 +61,9 @@
                     if (!$achou) {
                         $infoPessoa = ["nome"=>$row["nome_p"], "filhos"=>$row['nome_f'] != null ? [$row['nome_f']] :[]]; //json com informações da pessoa
                         $pessoas["pessoas"][] =  $infoPessoa; ///adição da pessoa no json de retorno
-
                     }
                 }   
             }
-
 
             header('Content-Type: application/json');
             echo json_encode($pessoas);
@@ -70,18 +71,20 @@
         
         public function gravar($json) {
             
+            // dropa e recria as tabelas
             $this->conexao->query('DROP TABLE filho');
             $this->conexao->query('DROP TABLE pessoa');
             $this->criarBD();
 
-            $id_p = 1;
-            $id_filho = 1;
+            $id_p = 1; //pk da pessoa
+            $id_filho = 1; //pk do filho
             foreach ($json->pessoas as $pessoa) {
 
+                //insere a pessoa
                 $this->conexao->query("insert  into  pessoa (id,nome) values (".strval($id_p).",'".$pessoa->nome."')");
                 
+                //insere cada um dos filhos
                 foreach ($pessoa->filhos as $filho) {
-
                     $this->conexao->query("insert  into filho (id,pessoa_id,nome) values (".$id_filho.",".$id_p.",'".$filho."')");
                     $id_filho += 1;
                 }
@@ -93,39 +96,4 @@
             echo json_encode($json);
         }
     }
-
- 
-    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    $uri = explode( '/', $uri );
-    $metodo = end($uri);
-
-    header('Content-Type: application/json');
-
-    $banco = new BD("localhost", 'root', '123456', 'teste_rte');
-
-    // Conectar / Criar banco
-    try {
-        $banco->conectar();
-    } catch (Exception $e) {
-        $banco->criarBD();
-        $banco->conectar();
-    }
-
-
-    switch($metodo)
-    {
-        case "ler" :
-            $banco->ler();
-            break;
-
-        case "gravar" :
-            $json = json_decode(file_get_contents('php://input'));
-            $banco->gravar($json);
-            break;
-
-        default: 
-            echo "Request inválido";
-    }
-
-
 ?>
