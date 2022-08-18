@@ -43,7 +43,7 @@ function ajustarJsonNaTela(json) {
         
         celula1.innerHTML = '<text id="'+id+'">'+pessoa.nome+'</text>';
         celula2.innerHTML = '<input style="padding: 3px;" type="button" value="Remover" onclick="deletarPessoa('+id+')">';
-        celula3.innerHTML = '<input style="padding: 3px;" type="button" value="Adicionar filho">';
+        celula3.innerHTML = '<input style="padding: 3px;" type="button" value="Adicionar filho" onclick="Popup('+id+')">';
         
         //css
         celula1.classList.add('row-pessoa');
@@ -138,4 +138,30 @@ function deletarFilho(filho) {
         newJson.pessoas.push(pessoa)
     }
     ajustarJsonNaTela(newJson);
+}
+
+function Popup(pessoa) {
+    let nomeFilho = prompt("Informe o nome:", "");
+    if (nomeFilho == null || nomeFilho == "") {
+        return;
+    } else {
+        incluirFilho(pessoa, nomeFilho)
+    }
+}
+
+function incluirFilho(pessoa, nomeFilho) {
+
+    // console.log(pessoa);
+    nomePessoa = pessoa.innerHTML;
+    var txtarea = document.getElementById('json-area');
+    var json = JSON.parse(txtarea.value);
+
+    // newJson = {"pessoas":[]}
+    for (let i = 0; i < json.pessoas.length; i++) {
+        pessoa = json.pessoas[i];
+        if (nomePessoa == pessoa.nome) {
+            json.pessoas[i].filhos.push(nomeFilho)
+        }
+    }
+    ajustarJsonNaTela(json);
 }
